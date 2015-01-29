@@ -12,7 +12,7 @@ var T = new Twit(require('./config.js'));
 
 var baseUrl = 'http://news.google.com';
 
-//clickbait patterns
+//clickbait patterns - Add freely to this array. The '######' token will be replaced by the Google News topic selected
 var CBPatts = ['1 weird trick to guarantee a better ######',
 '###### loses it and restores my faith in humanity',
 "If you think ###### is bad, you won’t believe what happens next",
@@ -88,28 +88,6 @@ function getTopics(category) {
   return dfd.promise();
 }
 
-// We pass this function a URL for a specific topic (for example:
-// [Miley Cyrus](https://news.google.com/news/section?pz=1&cf=all&ned=us&hl=en&q=Miley%20Cyrus).
-// We then get the page, feed the HTML to `cheerio`, and then pick a random headline
-// from the page.
-function getHeadline(url) {
-  var dfd = new _.Deferred();
-  request(url, function (error, response, body) {
-    if (!error && response.statusCode === 200) {
-      var $ = cheerio.load(body);
-      var headlines = $('.titletext');
-      // `pick()` doesn't work here because `headlines` isn't an array, so instead we use `cheerio`'s `eq` which
-      // give us a matched element at a given index, and pass it a random number.
-      var headline = headlines.eq(Math.floor(Math.random()*headlines.length)).text();
-      dfd.resolve(headline);
-    }
-    else {
-      dfd.reject();
-    }
-  });
-  return dfd.promise();
-}
-
 // ### Tweeting
 
 //      Category codes:
@@ -120,14 +98,11 @@ function getHeadline(url) {
 //      e:  entertainment
 //      s:  sports
 
-// This is the core function that is called on a timer that initiates the @twoheadlines algorithm.
+// This is the core function that is called on a timer that initiates the bot algorithm.
 // First, we get our list of topics from the Google News sidebar. 
-// Then we pick-and-remove a random topic from that list.
-// Next we grab a random headline available for that topic.
-// If the topic itself is in the headline itself, we replace it with a new topic. (For example,
-// if `topic.name` is "Miley Cyrus" and `headline` is "Miley Cyrus Wins a Grammy", then we
-// get a topic from a different category of news and fill in the blank for "______ Wins a Grammy".)
-// If we're unable to find a headline where we can easily find/replace, we simply try again.
+// Then we pick a random topic from that list.
+// Next we pick a random clickbait pattern as defined in CBPatts.
+// Finally, we replace the '######' token in the pattern with the random topic
 function tweet() {
   var categoryCodes = ['w', 'n', 'b', 'tc', 'e', 's'];
   getTopics(categoryCodes.pickRemove()).then(function(topics) {
