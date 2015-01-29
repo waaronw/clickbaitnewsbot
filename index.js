@@ -158,4 +158,4 @@ setInterval(function () {
   catch (e) {
     console.log(e);
   }
-}, 1000 * 60 * 2); //do it once per hour
+}, 1000 * 60 * 60); //do it once per hour

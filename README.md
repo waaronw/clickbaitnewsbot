@@ -1,9 +1,9 @@
-# @TwoHeadlines (twoheadlines)
+# @ClickBaitNewsb
 
-A Twitter bot that looks at news headlines and confuses them.
+A Twitter bot that makes clickbait out of current Google news topics
+This bot is based on the work of @dariusk (Twitter: @tinysubversions) and specifically his bot @twoheadlines
 
-## Documentation
-See [the nice-looking explanation of index.js](http://tinysubversions.com/twoheadlines/docs/) in order to understand how the bot works.
+The following are basic instructions for this stripped-down version of his bot
 
 ##Instructions
 
@@ -15,24 +15,13 @@ Clone the repo, then in your project directory, install the dependencies:
 
 Next, edit `config.js` to include your Twitter App access token, consumer key, and associated secrets. This is important! Without this you'll be unable to tweet.
 
-Install/run `grunt` to lint your code and run `docco` to regenerate the documentation.
-
-`$ npm install -g grunt-cli`
-`$ grunt`
-
-You can also run a watch in the background:
-
-`$ grunt watch`
-
 To actually run the bot, do:
 
 `$ node index.js`
 
 This will give you some output, including, after a bit, a bunch of text that is the tweet that's just been tweeted. You can check the twitter account to see if it's updated to verify that it actually works.
 
-## Contributing
-In lieu of a formal styleguide, take care to maintain the existing coding style. Add unit tests for any new or changed functionality. Lint and test your code using [Grunt](http://gruntjs.com/).
-
 ## License
+Copyright (c) 2015 W. Aaron Waychoff
 Copyright (c) 2013 Darius Kazemi  
 Licensed under the MIT license.
