@@ -123,14 +123,14 @@ function tweet() {
           console.log('topic',topic.name);
           var headline = pattern.replace('######', topic.name);
           console.log('headline:',headline);
-//          T.post('statuses/update', { status: headline }, function(err, reply) {
-//            if (err) {
-//              console.log('error:', err);
-//            }
-//            else {
-//              console.log('reply:', reply);
-//            }
-//          });
+          T.post('statuses/update', { status: headline }, function(err, reply) {
+            if (err) {
+              console.log('error:', err);
+            }
+            else {
+              console.log('reply:', reply);
+            }
+          });
         });
       }
 
