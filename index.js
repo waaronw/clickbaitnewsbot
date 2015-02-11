@@ -14,23 +14,23 @@ var baseUrl = 'http://news.google.com';
 
 //clickbait patterns - Add freely to this array. The '######' token will be replaced by the Google News topic selected
 var CBPatts = ['1 weird trick to guarantee a better ######',
-'###### loses it and restores my faith in humanity',
+'###### totally loses it and restores my faith in humanity',
 "If you think ###### is bad, you won’t believe what happens next",
 'See how ###### uses this one weird trick to get ahead',
-'If you could kill ###### and get away with it, would you?',
+"If you could 'dissapear' ###### and get away with it, would you?",
 'This story about ###### is so sweet… until the end!',
 'Use this one weird trick for a bigger ######.',
 "Won’t somebody think of ######?",
-"19 of the cutest ###### you’ve ever seen!",
+"19 of the cutest ######s you’ve ever seen!",
 'Check out the hot new ###### that has everybody talking!',
 'Watch this video to discover the true meaning of ######',
-'###### HATE this new trick',
+'Why ###### HATES this one new trick',
 "The one trick ###### doesn’t want you to know about",
 'See how ###### made extra money in the bedroom',
 '10 things you should never feed to ######',
 "Here’s what happened when ###### visited a petting zoo",
 'I left ###### home alone and THIS happened!',
-'###### says lasting relationship comes down to these easy steps',
+'###### says lasting relationships come down to these easy steps',
 '###### ignored this one thing: Big mistake!',
 "Do you hate ######? You probably aren’t alone.",
 'Customers were not prepared for what ###### refused to do',
@@ -66,15 +66,25 @@ Array.prototype.pickRemove = function() {
 // text from the links in the left-hand bar, which becomes a list of topics.
 // For example, if we passed it 'e' for Entertainment, we might get: Miley Cyrus, Oscars,
 // Kanye West, and so on.
+// Some basic processing is required to get the Topic into a pure string since Google adds characters to the link text.
+// This could change over time.
 function getTopics(category) {
   var topics = [];
   var dfd = new _.Deferred();
   request(baseUrl + '/news/section?ned=us&topic=' + category, function (error, response, body) {
     if (!error && response.statusCode === 200) {
       var $ = cheerio.load(body);
-      $('.topic').each(function() {
+      //console.log(body);
+      $('.esc-topic-link').each(function() {
         var topic = {};
-        topic.name = this.text();
+        var tempName = this.text();
+        //console.log('Raw Topic:',tempName);
+        tempName = tempName.trim();  //Trim any whitespace from the front/end
+        tempName = tempName.substr(0,tempName.length-2); //Get rid of the character at the end of the link text
+        //console.log('Trimmed Topic:',tempName);
+        tempName = tempName.trim(); //Re-trim in case any whitespace is revealed at the end of the string
+        //console.log('Final Topic:',tempName);
+        topic.name = tempName;
         topic.url = baseUrl + this.children().first().attr('href');
         topics.push(topic);
       });
@@ -105,20 +115,22 @@ function getTopics(category) {
 // Finally, we replace the '######' token in the pattern with the random topic
 function tweet() {
   var categoryCodes = ['w', 'n', 'b', 'tc', 'e', 's'];
-  getTopics(categoryCodes.pickRemove()).then(function(topics) {
-    var topic = topics.pickRemove();
-    console.log(topic);
+  getTopics(categoryCodes.pick()).then(function(topics) {
+    var topic = topics.pick();
+    console.log('topic:',topic);
 	  var pattern = CBPatts.pick();
+          console.log('pattern:',pattern);
+          console.log('topic',topic.name);
           var headline = pattern.replace('######', topic.name);
-          console.log(headline);
-          T.post('statuses/update', { status: headline }, function(err, reply) {
-            if (err) {
-              console.log('error:', err);
-            }
-            else {
-              console.log('reply:', reply);
-            }
-          });
+          console.log('headline:',headline);
+//          T.post('statuses/update', { status: headline }, function(err, reply) {
+//            if (err) {
+//              console.log('error:', err);
+//            }
+//            else {
+//              console.log('reply:', reply);
+//            }
+//          });
         });
       }
 
